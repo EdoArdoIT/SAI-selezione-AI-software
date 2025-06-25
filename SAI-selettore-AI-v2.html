@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selettore Avanzato di IA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --purple: #9b59b6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 25px;
+            background: var(--dark);
+        }
+        
+        .toolbar button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toolbar button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .toolbar button.save {
+            background: var(--success);
+        }
+        
+        .toolbar button.export {
+            background: var(--purple);
+        }
+        
+        .main-content {
+            display: flex;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        
+        .form-section {
+            padding: 25px;
+            width: 50%;
+            border-right: 1px solid #eee;
+        }
+        
+        .results-section {
+            padding: 25px;
+            width: 50%;
+            background: #f9f9ff;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .checkbox-item {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 10px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #ddd;
+        }
+        
+        .checkbox-item:hover {
+            border-color: var(--accent);
+        }
+        
+        .checkbox-item.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .checkbox-item input {
+            display: none;
+        }
+        
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .result-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--accent);
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            pointer-events: none;
+        }
+        
+        .result-item:nth-child(2) {
+            border-left-color: var(--success);
+        }
+        
+        .result-item:nth-child(3) {
+            border-left-color: var(--warning);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin: 0 0 8px 0;
+        }
+        
+        .ai-version {
+            background: #eee;
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .ai-strength {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-section {
+            padding: 25px;
+            background: #f0f7ff;
+            border-top: 1px solid #eee;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #e0e0e0;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .highlight {
+            background-color: #fffacd !important;
+            font-weight: bold;
+        }
+        
+        .add-ai-section {
+            padding: 20px;
+            background: #e8f4ff;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #e0e0e0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 0.85rem;
+        }
+        
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            min-height: 44px;
+        }
+        
+        .tag-input input {
+            border: none;
+            padding: 5px;
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .tag-input input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        @media (max-width: 900px) {
+            .form-section, .results-section {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .checkbox-item {
+                min-width: 100%;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--dark);
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Selettore Avanzato di IA</h1>
+            <p class="subtitle">Trova, personalizza e gestisci i tuoi assistenti AI</p>
+        </header>
+        
+        <div class="toolbar">
+            <button class="save" id="save-btn">
+                <i class="fas fa-save"></i> Salva nel Browser
+            </button>
+            <button class="export" id="export-btn">
+                <i class="fas fa-file-export"></i> Esporta Backup
+            </button>
+            <button id="import-btn">
+                <i class="fas fa-file-import"></i> Importa Backup
+            </button>
+            <button id="add-ai-btn">
+                <i class="fas fa-plus-circle"></i> Aggiungi Nuova IA
+            </button>
+        </div>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2><i class="fas fa-sliders-h"></i> Configura le tue esigenze</h2>
+                <p>Rispondi alle domande per trovare l'IA più adatta a te</p>
+                
+                <div class="question">
+                    <label for="language"><i class="fas fa-language"></i> 1. Lingua principale:</label>
+                    <select id="language">
+                        <option value="it">Italiano</option>
+                        <option value="en">Inglese</option>
+                        <option value="both">Entrambe</option>
+                        <option value="other">Altra</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <label for="budget"><i class="fas fa-money-bill-wave"></i> 2. Budget:</label>
+                    <select id="budget">
+                        <option value="gratis">Gratuito</option>
+                        <option value="freemium">Freemium (gratis con funzioni a pagamento)</option>
+                        <option value="paid">A pagamento</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <label><i class="fas fa-cogs"></i> 3. Funzionalità principali:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item" data-value="ricerca web">
+                            <span>Ricerca web</span>
+                            <input type="checkbox" id="web" value="ricerca web">
+                        </div>
+                        <div class="checkbox-item selected" data-value="ragionamento">
+                            <span>Ragionamento</span>
+                            <input type="checkbox" id="reasoning" value="ragionamento" checked>
+                        </div>
+                        <div class="checkbox-item" data-value="codice">
+                            <span>Programmazione</span>
+                            <input type="checkbox" id="code" value="codice">
+                        </div>
+                        <div class="checkbox-item" data-value="immagini">
+                            <span>Immagini</span>
+                            <input type="checkbox" id="images" value="immagini">
+                        </div>
+                        <div class="checkbox-item selected" data-value="documenti">
+                            <span>Documenti</span>
+                            <input type="checkbox" id="docs" value="documenti" checked>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <label for="context"><i class="fas fa-book"></i> 4. Lunghezza del contesto:</label>
+                    <select id="context">
+                        <option value="short">Breve (fino a 10K token)</option>
+                        <option value="medium" selected>Medio (10K-50K token)</option>
+                        <option value="long">Lungo (oltre 100K token)</option>
+                    </select>
+                </div>
+                
+                <div class="question">
+                    <label for="domain"><i class="fas fa-globe"></i> 5. Dominio principale:</label>
+                    <select id="domain">
+                        <option value="tech">Tecnologia/Programmazione</option>
+                        <option value="creative">Scrittura creativa</option>
+                        <option value="research">Ricerca/Accademico</option>
+                        <option value="general">Uso generale</option>
+                        <option value="business">Business/Office</option>
+                    </select>
+                </div>
+                
+                <button id="calculate-btn">
+                    <i class="fas fa-calculator"></i> TROVA LA MIA IA IDEALE
+                </button>
+                
+                <div class="status-message" id="status-message"></div>
+            </div>
+            
+            <div class="results-section">
+                <h2><i class="fas fa-trophy"></i> Le tue migliori opzioni</h2>
+                <div id="results-container">
+                    <div style="text-align: center; padding: 30px; color: #777;">
+                        <p><i class="fas fa-robot fa-3x" style="margin-bottom: 15px;"></i></p>
+                        <p>Rispondi alle domande a sinistra</p>
+                        <p>e clicca il pulsante per vedere</p>
+                        <p>le raccomandazioni personalizzate.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <div class="tabs">
+                <div class="tab active" data-tab="comparison">Confronto Generale</div>
+                <div class="tab" data-tab="quick-tips">Consigli Rapidi</div>
+                <div class="tab" data-tab="custom-ais">IA Personalizzate</div>
+            </div>
+            
+            <div class="tab-content active" id="comparison-tab">
+                <h2>Confronto tra le IA disponibili</h2>
+                <table id="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>IA</th>
+                            <th>Versione Top</th>
+                            <th>Punti di Forza</th>
+                            <th>Ideale per</th>
+                            <th>Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="quick-tips-tab">
+                <h2>Consigli Rapidi per Scegliere</h2>
+                <div class="result-item">
+                    <div class="ai-name">Ricerca con fonti</div>
+                    <p><strong>Raccomandato:</strong> Perplexity</p>
+                    <p>Perplexity è ottimo per ricerche accurate con riferimenti verificabili.</p>
+                </div>
+                
+                <div class="result-item">
+                    <div class="ai-name">Programmazione</div>
+                    <p><strong>Raccomandato:</strong> DeepSeek-R1 o Qwen</p>
+                    <p>Queste IA offrono ottime prestazioni per codice e debugging.</p>
+                </div>
+                
+                <div class="result-item">
+                    <div class="ai-name">Scrittura creativa</div>
+                    <p><strong>Raccomandato:</strong> ChatGPT-4 Turbo</p>
+                    <p>Genera contenuti creativi con stile e fluidità eccezionali.</p>
+                </div>
+                
+                <div class="result-item">
+                    <div class="ai-name">Documenti lunghi</div>
+                    <p><strong>Raccomandato:</strong> Claude 3</p>
+                    <p>Gestisce contesti lunghi fino a 200K token con precisione.</p>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="custom-ais-tab">
+                <h2>Le tue IA Personalizzate</h2>
+                <div id="custom-ais-container">
+                    <p>Nessuna IA personalizzata ancora. Aggiungine una usando il pulsante "Aggiungi Nuova IA".</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="add-ai-section">
+            <h2><i class="fas fa-plus-circle"></i> Aggiungi una nuova IA</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-name">Nome IA:</label>
+                    <input type="text" id="ai-name" placeholder="Es: Mistral">
+                </div>
+                <div class="form-group">
+                    <label for="ai-version">Versione:</label>
+                    <input type="text" id="ai-version" placeholder="Es: Mistral Large">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-cost">Costo:</label>
+                    <select id="ai-cost">
+                        <option value="gratis">Gratuito</option>
+                        <option value="freemium">Freemium</option>
+                        <option value="paid">A pagamento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ai-context">Lunghezza contesto (token):</label>
+                    <input type="number" id="ai-context" value="32000">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-languages">Lingue (separate da virgola):</label>
+                    <input type="text" id="ai-languages" placeholder="it, en, fr, es">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-features">Funzionalità:</label>
+                    <div class="tag-input" id="features-container">
+                        <input type="text" id="ai-features" placeholder="Aggiungi funzionalità...">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-domains">Domini:</label>
+                    <div class="tag-input" id="domains-container">
+                        <input type="text" id="ai-domains" placeholder="Aggiungi dominio...">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="ai-description">Descrizione:</label>
+                    <textarea id="ai-description" rows="3" placeholder="Miglior per..."></textarea>
+                </div>
+            </div>
+            
+            <button id="add-custom-ai-btn">
+                <i class="fas fa-plus"></i> Aggiungi IA Personalizzata
+            </button>
+            
+            <div class="status-message" id="custom-ai-status"></div>
+        </div>
+        
+        <footer>
+            <p>Tool sviluppato con ❤️ per aiutarti a scegliere l'IA perfetta | Aggiornato a Giugno 2025</p>
+        </footer>
+    </div>
+    
+    <!-- Modal for Import -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Importa Backup</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <p>Carica un file di backup per ripristinare le tue IA personalizzate.</p>
+            <div class="form-group">
+                <label for="backup-file">Seleziona file di backup:</label>
+                <input type="file" id="backup-file" accept=".json">
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-import">Annulla</button>
+                <button class="save" id="confirm-import">Importa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database delle IA (caricato da localStorage se disponibile)
+        let aiDatabase = JSON.parse(localStorage.getItem('aiDatabase')) || [
+            {
+                "nome": "ChatGPT",
+                "versione": "GPT-4 Turbo",
+                "costo": "freemium",
+                "lingue": ["it", "en", "es", "fr", "de"],
+                "funzionalita": ["ragionamento", "codice", "documenti", "ricerca web"],
+                "contesto": 128000,
+                "domini": ["creative", "tech", "general"],
+                "miglior_per": "Scrittura creativa & task complessi"
+            },
+            {
+                "nome": "Qwen",
+                "versione": "Qwen1.5-72B",
+                "costo": "gratis",
+                "lingue": ["it", "en", "zh"],
+                "funzionalita": ["ragionamento", "codice", "documenti"],
+                "contesto": 128000,
+                "domini": ["tech", "research"],
+                "miglior_per": "Programmazione & analisi dati"
+            },
+            {
+                "nome": "DeepSeek",
+                "versione": "DeepSeek-R1",
+                "costo": "gratis",
+                "lingue": ["it", "en", "zh"],
+                "funzionalita": ["codice", "ragionamento", "documenti"],
+                "contesto": 128000,
+                "domini": ["tech", "research"],
+                "miglior_per": "Sviluppo software & contesto lungo"
+            },
+            {
+                "nome": "Copilot",
+                "versione": "GPT-4 + DALL-E 3",
+                "costo": "freemium",
+                "lingue": ["it", "en"],
+                "funzionalita": ["ricerca web", "codice", "immagini", "documenti"],
+                "contesto": 32000,
+                "domini": ["tech", "creative", "business"],
+                "miglior_per": "Integrazione Office & multifunzione"
+            },
+            {
+                "nome": "Claude",
+                "versione": "Claude 3 Opus",
+                "costo": "paid",
+                "lingue": ["it", "en"],
+                "funzionalita": ["ragionamento", "documenti"],
+                "contesto": 200000,
+                "domini": ["research", "general"],
+                "miglior_per": "Analisi documenti lunghi & precisione"
+            },
+            {
+                "nome": "Perplexity",
+                "versione": "Ricerca avanzata",
+                "costo": "freemium",
+                "lingue": ["it", "en"],
+                "funzionalita": ["ricerca web", "documenti"],
+                "contesto": 28000,
+                "domini": ["research", "general"],
+                "miglior_per": "Ricerca con fonti & aggiornamenti in tempo reale"
+            },
+            {
+                "nome": "Mistral",
+                "versione": "Mistral Large",
+                "costo": "freemium",
+                "lingue": ["it", "en", "fr", "de", "es"],
+                "funzionalita": ["ragionamento", "codice", "documenti"],
+                "contesto": 32000,
+                "domini": ["tech", "research", "creative"],
+                "miglior_per": "Multilingue & efficienza"
+            }
+        ];
+        
+        // Inizializza la pagina
+        document.addEventListener('DOMContentLoaded', function() {
+            renderComparisonTable();
+            setupEventListeners();
+            loadCheckboxState();
+            renderCustomAIs();
+        });
+        
+        // Imposta tutti gli event listeners
+        function setupEventListeners() {
+            // Pulsante per calcolare le raccomandazioni
+            document.getElementById('calculate-btn').addEventListener('click', calculateRecommendation);
+            
+            // Seleziona elementi checkbox
+            document.querySelectorAll('.checkbox-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const checkbox = this.querySelector('input');
+                    checkbox.checked = !checkbox.checked;
+                    this.classList.toggle('selected', checkbox.checked);
+                });
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Rimuovi classe active da tutte le tab
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Aggiungi classe active alla tab cliccata
+                    this.classList.add('active');
+                    
+                    // Mostra il contenuto corrispondente
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Aggiungi nuova IA
+            document.getElementById('add-custom-ai-btn').addEventListener('click', addCustomAI);
+            
+            // Salva nel browser
+            document.getElementById('save-btn').addEventListener('click', saveToBrowser);
+            
+            // Esporta backup
+            document.getElementById('export-btn').addEventListener('click', exportBackup);
+            
+            // Importa backup
+            document.getElementById('import-btn').addEventListener('click', () => {
+                document.getElementById('import-modal').style.display = 'flex';
+            });
+            
+            // Apri modal per aggiungere IA
+            document.getElementById('add-ai-btn').addEventListener('click', () => {
+                document.querySelector('.add-ai-section').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Gestione tag per funzionalità
+            document.getElementById('ai-features').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    addTag(this.value, 'features-container');
+                    this.value = '';
+                }
+            });
+            
+            // Gestione tag per domini
+            document.getElementById('ai-domains').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim() !== '') {
+                    addTag(this.value, 'domains-container');
+                    this.value = '';
+                }
+            });
+            
+            // Chiudi modale
+            document.querySelector('.close-modal').addEventListener('click', () => {
+                document.getElementById('import-modal').style.display = 'none';
+            });
+            
+            document.getElementById('cancel-import').addEventListener('click', () => {
+                document.getElementById('import-modal').style.display = 'none';
+            });
+            
+            // Conferma import
+            document.getElementById('confirm-import').addEventListener('click', importBackup);
+        }
+        
+        // Funzione per aggiungere tag
+        function addTag(text, containerId) {
+            const container = document.getElementById(containerId);
+            const tag = document.createElement('span');
+            tag.className = 'tag';
+            tag.textContent = text;
+            
+            const removeBtn = document.createElement('span');
+            removeBtn.innerHTML = ' &times;';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.addEventListener('click', function() {
+                tag.remove();
+            });
+            
+            tag.appendChild(removeBtn);
+            container.insertBefore(tag, container.querySelector('input'));
+        }
+        
+        // Funzione per calcolare le raccomandazioni
+        function calculateRecommendation() {
+            // Ottieni le selezioni dell'utente
+            const language = document.getElementById('language').value;
+            const budget = document.getElementById('budget').value;
+            const context = document.getElementById('context').value;
+            const domain = document.getElementById('domain').value;
+            
+            // Ottieni le funzionalità selezionate
+            const features = [];
+            document.querySelectorAll('.checkbox-item input:checked').forEach(checkbox => {
+                features.push(checkbox.value);
+            });
+            
+            // Calcola i punteggi
+            const results = aiDatabase.map(ai => {
+                let score = 0;
+                
+                // Punteggio per la lingua
+                if (language === 'it' && ai.lingue.includes('it')) score += 2;
+                if (language === 'en' && ai.lingue.includes('en')) score += 2;
+                if (language === 'both' && ai.lingue.includes('it') && ai.lingue.includes('en')) score += 3;
+                if (language === 'other') score += 1; // Punteggio base per altre lingue
+                
+                // Punteggio per il budget
+                if (budget === ai.costo) score += 3;
+                
+                // Punteggio per le funzionalità
+                features.forEach(feature => {
+                    if (ai.funzionalita.includes(feature)) score += 1.5;
+                });
+                
+                // Punteggio per il contesto
+                if (context === 'long' && ai.contesto >= 100000) score += 4;
+                else if (context === 'medium' && ai.contesto >= 30000) score += 2;
+                
+                // Punteggio per il dominio
+                if (ai.domini.includes(domain)) score += 2;
+                
+                return {...ai, score};
+            });
+            
+            // Ordina per punteggio decrescente
+            results.sort((a, b) => b.score - a.score);
+            
+            // Mostra i primi 3 risultati
+            displayResults(results.slice(0, 3));
+        }
+        
+        // Funzione per mostrare i risultati
+        function displayResults(topAIs) {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '';
+            
+            if (topAIs.length === 0) {
+                container.innerHTML = '<p>Nessuna IA corrisponde ai tuoi criteri. Prova a modificare le tue selezioni.</p>';
+                return;
+            }
+            
+            topAIs.forEach((ai, index) => {
+                const aiElement = document.createElement('div');
+                aiElement.className = 'result-item';
+                
+                // Crea stelle in base al punteggio
+                let stars = '';
+                const starCount = Math.min(5, Math.floor(ai.score / 4));
+                for (let i = 0; i < 5; i++) {
+                    stars += i < starCount ? '★' : '☆';
+                }
+                
+                aiElement.innerHTML = `
+                    <div class="score">${Math.round(ai.score)}</div>
+                    <div class="ai-name">${ai.nome}</div>
+                    <div class="ai-version">${ai.versione}</div>
+                    <p><strong>Miglior per:</strong> ${ai.miglior_per}</p>
+                    <p><strong>Funzionalità:</strong> ${ai.funzionalita.join(', ')}</p>
+                    <p><strong>Lingue:</strong> ${ai.lingue.join(', ')}</p>
+                    <p><strong>Costo:</strong> ${ai.costo === 'gratis' ? 'Gratuito' : 
+                        ai.costo === 'freemium' ? 'Freemium' : 'A pagamento'}</p>
+                    <p><strong>Affinità:</strong> ${stars}</p>
+                `;
+                
+                container.appendChild(aiElement);
+            });
+        }
+        
+        // Renderizza la tabella di confronto
+        function renderComparisonTable() {
+            const tbody = document.querySelector('#comparison-table tbody');
+            tbody.innerHTML = '';
+            
+            aiDatabase.forEach(ai => {
+                const row = document.createElement('tr');
+                
+                // Evidenzia le IA personalizzate
+                const isCustom = ai.custom;
+                const rowClass = isCustom ? 'highlight' : '';
+                
+                row.innerHTML = `
+                    <td class="${rowClass}">${ai.nome} ${isCustom ? '<span class="tag">Personalizzata</span>' : ''}</td>
+                    <td>${ai.versione}</td>
+                    <td>${ai.funzionalita.join(', ')}</td>
+                    <td>${ai.miglior_per}</td>
+                    <td>${ai.costo === 'gratis' ? 'Gratuito' : 
+                         ai.costo === 'freemium' ? 'Freemium' : 'A pagamento'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Aggiungi una IA personalizzata
+        function addCustomAI() {
+            const name = document.getElementById('ai-name').value.trim();
+            const version = document.getElementById('ai-version').value.trim();
+            const cost = document.getElementById('ai-cost').value;
+            const context = parseInt(document.getElementById('ai-context').value) || 32000;
+            const languages = document.getElementById('ai-languages').value.split(',').map(lang => lang.trim());
+            const description = document.getElementById('ai-description').value.trim();
+            
+            // Raccogli funzionalità dai tag
+            const features = [];
+            document.querySelectorAll('#features-container .tag').forEach(tag => {
+                features.push(tag.textContent.replace('×', '').trim());
+            });
+            
+            // Raccogli domini dai tag
+            const domains = [];
+            document.querySelectorAll('#domains-container .tag').forEach(tag => {
+                domains.push(tag.textContent.replace('×', '').trim());
+            });
+            
+            // Validazione
+            if (!name || !version || features.length === 0 || domains.length === 0) {
+                showStatus('custom-ai-status', 'Compila tutti i campi obbligatori', 'error');
+                return;
+            }
+            
+            // Crea il nuovo oggetto IA
+            const newAI = {
+                nome: name,
+                versione: version,
+                costo: cost,
+                contesto: context,
+                lingue: languages,
+                funzionalita: features,
+                domini: domains,
+                miglior_per: description || "IA personalizzata",
+                custom: true
+            };
+            
+            // Aggiungi al database
+            aiDatabase.push(newAI);
+            
+            // Aggiorna la visualizzazione
+            renderComparisonTable();
+            renderCustomAIs();
+            
+            // Mostra messaggio di successo
+            showStatus('custom-ai-status', `IA "${name}" aggiunta con successo!`, 'success');
+            
+            // Resetta il form
+            document.getElementById('ai-name').value = '';
+            document.getElementById('ai-version').value = '';
+            document.getElementById('ai-description').value = '';
+            document.getElementById('ai-languages').value = '';
+            document.querySelectorAll('#features-container .tag, #domains-container .tag').forEach(tag => tag.remove());
+        }
+        
+        // Renderizza le IA personalizzate
+        function renderCustomAIs() {
+            const container = document.getElementById('custom-ais-container');
+            const customAIs = aiDatabase.filter(ai => ai.custom);
+            
+            if (customAIs.length === 0) {
+                container.innerHTML = '<p>Nessuna IA personalizzata ancora. Aggiungine una usando il pulsante "Aggiungi Nuova IA".</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            customAIs.forEach(ai => {
+                const aiElement = document.createElement('div');
+                aiElement.className = 'result-item';
+                aiElement.innerHTML = `
+                    <div class="ai-name">${ai.nome} <span class="tag">Personalizzata</span></div>
+                    <div class="ai-version">${ai.versione}</div>
+                    <p><strong>Funzionalità:</strong> ${ai.funzionalita.join(', ')}</p>
+                    <p><strong>Lingue:</strong> ${ai.lingue.join(', ')}</p>
+                    <p><strong>Costo:</strong> ${ai.costo === 'gratis' ? 'Gratuito' : 
+                        ai.costo === 'freemium' ? 'Freemium' : 'A pagamento'}</p>
+                    <p><strong>Contesto:</strong> ${ai.contesto.toLocaleString()} token</p>
+                    <p>${ai.miglior_per}</p>
+                `;
+                container.appendChild(aiElement);
+            });
+        }
+        
+        // Salva le preferenze nel browser
+        function saveToBrowser() {
+            try {
+                localStorage.setItem('aiDatabase', JSON.stringify(aiDatabase));
+                showStatus('status-message', 'Preferenze salvate con successo nel browser!', 'success');
+            } catch (e) {
+                showStatus('status-message', 'Errore durante il salvataggio: ' + e.message, 'error');
+            }
+        }
+        
+        // Esporta un backup
+        function exportBackup() {
+            try {
+                const dataStr = JSON.stringify(aiDatabase);
+                const date = new Date();
+                const dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}-${date.getMinutes().toString().padStart(2, '0')}`;
+                const fileName = `sia-${dateStr}.json`;
+                
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', fileName);
+                document.body.appendChild(linkElement);
+                
+                linkElement.click();
+                document.body.removeChild(linkElement);
+                
+                showStatus('status-message', `Backup "${fileName}" esportato con successo!`, 'success');
+            } catch (e) {
+                showStatus('status-message', 'Errore durante l\'esportazione: ' + e.message, 'error');
+            }
+        }
+        
+        // Importa un backup
+        function importBackup() {
+            const fileInput = document.getElementById('backup-file');
+            
+            if (!fileInput.files.length) {
+                alert('Seleziona un file di backup');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!Array.isArray(importedData)) {
+                        throw new Error('Formato file non valido');
+                    }
+                    
+                    // Conserva le IA non personalizzate e aggiungi quelle importate
+                    const defaultAIs = aiDatabase.filter(ai => !ai.custom);
+                    aiDatabase = [...defaultAIs, ...importedData.filter(ai => ai.custom)];
+                    
+                    // Salva e aggiorna
+                    localStorage.setItem('aiDatabase', JSON.stringify(aiDatabase));
+                    renderComparisonTable();
+                    renderCustomAIs();
+                    
+                    document.getElementById('import-modal').style.display = 'none';
+                    showStatus('status-message', 'Backup importato con successo!', 'success');
+                } catch (e) {
+                    showStatus('status-message', 'Errore durante l\'importazione: ' + e.message, 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Mostra un messaggio di stato
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'status-message ' + type;
+            
+            // Rimuovi il messaggio dopo 5 secondi
+            setTimeout(() => {
+                element.className = 'status-message';
+                element.textContent = '';
+            }, 5000);
+        }
+        
+        // Carica lo stato delle checkbox
+        function loadCheckboxState() {
+            const savedState = localStorage.getItem('checkboxState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                
+                // Imposta i valori dei dropdown
+                document.getElementById('language').value = state.language || 'it';
+                document.getElementById('budget').value = state.budget || 'gratis';
+                document.getElementById('context').value = state.context || 'medium';
+                document.getElementById('domain').value = state.domain || 'tech';
+                
+                // Imposta le checkbox
+                state.features.forEach(feature => {
+                    const checkbox = document.querySelector(`input[value="${feature}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        const item = checkbox.closest('.checkbox-item');
+                        if (item) item.classList.add('selected');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
